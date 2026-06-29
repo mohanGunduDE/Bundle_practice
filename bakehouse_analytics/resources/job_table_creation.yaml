@@ -1,0 +1,22 @@
+resources:
+  jobs:
+    Creating_tables:
+      name: Creating tables
+      tasks:
+        - task_key: fetch_tableName
+          notebook_task:
+            notebook_path: ../src/params_table_names.ipynb
+        - task_key: names_loop
+          depends_on:
+            - task_key: fetch_tableName
+          for_each_task:
+            inputs: "{{tasks.fetch_tableName.values.myTables}}"
+            task:
+              task_key: create_tables_iteration
+              notebook_task:
+                notebook_path: ../src/create_tables.ipynb
+                base_parameters:
+                  table_Name: "{{input}}"
+      queue:
+        enabled: true
+      performance_target: PERFORMANCE_OPTIMIZED
